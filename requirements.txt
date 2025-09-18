@@ -3,3 +3,4 @@ inference-sdk
 pillow
 matplotlib
 requests
+opencv-python-headless
