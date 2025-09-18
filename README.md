@@ -1,47 +1,65 @@
-## Problem Statement
+#  AI vs Real Image Classifier
 
-AI image generators like Stable Diffusion and MidJourney can create highly realistic images that often resemble real photos.  
-This project builds a **binary classifier** to detect whether an image is **AI-generated** or **real**, addressing needs in content moderation, misinformation detection, and commercial image verification.
+##  Project Overview
+This project builds a **binary classifier** to distinguish between **AI-generated images** and **real-world photos**.  
+The model was trained using **Roboflow’s Vision Transformer (ViT)** and fine-tuned on a custom dataset.
 
-## Dataset
+---
 
-The dataset was built from two balanced sources:
-
-- **Real Images (≈470)** → collected from the Pexels API (public stock photography).  
-- **AI-Generated Images (≈500)** → created using Stable Diffusion/Craiyon with varied prompts.  
+##  Dataset
+- **AI-Generated Images (~500)** → Generated via Stable Diffusion / Craiyon with varied prompts.  
+- **Real Images (~470)** → Collected with the Pexels API.  
 
 ### Preprocessing
-- Resized to 224x224 pixels  
-- Normalized for model input  
-- Split: Train 70% / Validation 20% / Test 10%  
+- Resize → 224x224
+- Normalize pixel intensities
+- Split → Train 70%, Validation 20%, Test 10%
 
 ### Augmentation
-- Horizontal flips  
-- Small rotations (±15°)  
-- Brightness/Contrast adjustments (~10%)  
-- Gaussian blur (2–3px)
+- Horizontal flip
+- Small rotations (±15°)
+- Brightness & contrast adjustments (±10%)
+- Gaussian blur (~2–3px)
 
-## Model & Training
+---
 
-The model was trained on Roboflow using transfer learning:  
+##  Model & Training
+- Architecture: **Vision Transformer (ViT)**
+- Pretrained on: **ImageNet**
+- Training Platform: **Roboflow GPU cluster**
+- Training Time: ~34 minutes / 12 epochs
+- Loss: Cross Entropy
+- Optimizer: Adam
 
-- **Architecture**: Vision Transformer (ViT)  
-- **Pretrained on**: ImageNet  
-- **Training time**: ~34 minutes on Roboflow GPU  
-- **Data split**: 70% train / 20% validation / 10% test  
-- **Loss**: Cross Entropy  
-- **Optimizer**: Adam (default settings)  
+---
 
-## Results & Evaluation
+## Results
+- **Test Accuracy**: ~99.0%  
 
-The Vision Transformer (ViT) model achieved:
+The training loss decreased smoothly, while the validation accuracy stabilized at ~99%, showing strong generalization.
 
-- **Accuracy (Validation Top-1)**: ~99% after 12 epochs  
+---
 
-This shows the model performed extremely well in distinguishing AI-generated and real images in the dataset.
+## Deployment & Usage
 
-### Training Graphs
-Roboflow provided the following training curves:
+### Option 1: Streamlit Demo App
+streamlit run streamlit_app.py
 
-- **Training Loss** (decreased smoothly → model converged well)  
-- **Validation Accuracy** (reached ~99% with stability after epoch 6)
+### Option 2: Python Inference via Roboflow API
+```python
+from inference_sdk import InferenceHTTPClient
+import json
+
+client = InferenceHTTPClient(
+    api_url="https://serverless.roboflow.com",
+    api_key="YOUR_API_KEY"
+)
+
+result = client.run_workflow(
+    workspace_name="ziad-f3ycp",
+    workflow_id="custom-workflow",
+    images={"image": "test_image.jpg"},
+    use_cache=True
+)
+
+print(json.dumps(result, indent=2))
