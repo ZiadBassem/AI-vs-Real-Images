@@ -42,10 +42,10 @@ The training loss decreased smoothly, while the validation accuracy stabilized a
 
 ## Deployment & Usage
 
-### Option 2: Streamlit Demo App
+### Option 1: Streamlit Demo App
 streamlit run streamlit_app.py
 
-### Option 1 Python Inference via Roboflow API
+### Option 2: Python Inference via Roboflow API
 ```python
 from inference_sdk import InferenceHTTPClient
 import json
