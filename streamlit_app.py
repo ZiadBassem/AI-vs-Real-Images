@@ -1,11 +1,10 @@
 import streamlit as st
-import requests
+from inference_sdk import InferenceHTTPClient
 from PIL import Image
-
-st.set_page_config(page_title="AI vs Real Classifier", page_icon="🤖")
+import tempfile
 
 st.title("🖼️ AI vs Real Image Classifier")
-st.write("Upload an image to check if it was **AI-generated** or a **Real photo**.")
+st.write("Upload an image to check if it's **AI-generated** or a **Real photo**.")
 
 uploaded = st.file_uploader("Upload an Image", type=["jpg", "jpeg", "png"])
 
@@ -13,31 +12,35 @@ if uploaded:
     img = Image.open(uploaded).convert("RGB")
     st.image(img, caption="Uploaded Image", use_container_width=True)
 
-    img_bytes = uploaded.getvalue()
+    # ✅ Roboflow Client
+    client = InferenceHTTPClient(
+        api_url="https://serverless.roboflow.com",
+        api_key=st.secrets["ROBOFLOW_API_KEY"]
+    )
 
-    # Roboflow API details (replace with your actual key)
-    api_url = "https://serverless.roboflow.com"
-    workflow = "ziad-f3ycp/custom-workflow"
-    api_key = "88SAMULX00OA2WNAnJG6"   # <-- your real API key
+    with st.spinner("🔎 Classifying..."):
+        try:
+            # Save uploaded file to a temporary path
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_file:
+                tmp_file.write(uploaded.getvalue())
+                tmp_path = tmp_file.name
 
-    endpoint = f"{api_url}/{workflow}?api_key={api_key}"
+            # Run inference workflow
+            result = client.run_workflow(
+                workspace_name="ziad-f3ycp",
+                workflow_id="custom-workflow",
+                images={"image": tmp_path},  # ✅ file path works
+                use_cache=True
+            )
 
-   with st.spinner("🔎 Classifying..."):
-    try:
-        resp = requests.post(
-            endpoint,
-            files={"image": ("uploaded.jpg", img_bytes, "image/jpeg")}
-        )
-        resp.raise_for_status()
-        result = resp.json()
+            pred_dict = result[0]["predictions"]["predictions"][0]
+            label = pred_dict["class"]
+            conf = pred_dict["confidence"]
 
-        # Parse nested JSON like in your notebook
-        pred_dict = result[0]["predictions"]["predictions"][0]
-        label = pred_dict["class"]
-        conf = pred_dict["confidence"]
+            st.success(f"✅ Prediction: **{label}** ({conf:.2%} confidence)")
 
-        st.success(f"✅ Prediction: **{label}** ({conf:.2f})")
-    except Exception as e:
-        st.error("❌ Error running inference")
-        st.write(str(e))
-        st.json(result if 'result' in locals() else {})
+        except Exception as e:
+            st.error("❌ Error running inference")
+            st.write(str(e))
+            if 'result' in locals():
+                st.json(result)
