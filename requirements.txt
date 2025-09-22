@@ -5,3 +5,6 @@ opencv-python-headless
 matplotlib
 seaborn
 scikit-learn
+xgboost
+pandas
+numpy
