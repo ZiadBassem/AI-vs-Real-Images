@@ -43,7 +43,7 @@ The training loss decreased smoothly, while the validation accuracy stabilized a
 ## Deployment & Usage
 
 ### Option 1: Streamlit Demo App
-streamlit run streamlit_app.py
+[streamlit run streamlit_app.py](https://ziad-image-classifier.streamlit.app/)
 
 ### Option 2: Python Inference via Roboflow API
 ```python
