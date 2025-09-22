@@ -28,7 +28,7 @@ if uploaded:
             # Run inference workflow
             result = client.run_workflow(
                 workspace_name="ziad-f3ycp",
-                workflow_id="custom-workflow",
+                workflow_id="AIvsRealImageClassifier-workflow",
                 images={"image": tmp_path},  # ✅ file path works
                 use_cache=True
             )

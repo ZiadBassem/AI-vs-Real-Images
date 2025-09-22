@@ -1,6 +1,7 @@
-streamlit
-inference-sdk
+streamlit==1.31.0
 pillow
-matplotlib
-requests
+inference-sdk
 opencv-python-headless
+matplotlib
+seaborn
+scikit-learn
