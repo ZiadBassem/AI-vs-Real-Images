@@ -10,7 +10,7 @@ uploaded = st.file_uploader("Upload an Image", type=["jpg", "jpeg", "png"])
 
 if uploaded:
     img = Image.open(uploaded).convert("RGB")
-    st.image(img, caption="Uploaded Image", use_container_width=True)
+    st.image(img, caption="Uploaded Image")
 
     # ✅ Roboflow Client
     client = InferenceHTTPClient(
@@ -28,7 +28,7 @@ if uploaded:
             # Run inference workflow
             result = client.run_workflow(
                 workspace_name="ziad-f3ycp",
-                workflow_id="AIvsRealImageClassifier-workflow",
+                workflow_id="aivsrealimageclassifier-workflow",
                 images={"image": tmp_path},  # ✅ file path works
                 use_cache=True
             )
