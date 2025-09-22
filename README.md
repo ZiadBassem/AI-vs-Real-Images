@@ -57,7 +57,7 @@ client = InferenceHTTPClient(
 
 result = client.run_workflow(
     workspace_name="ziad-f3ycp",
-    workflow_id="custom-workflow",
+    workflow_id="aivsrealimageclassifier-workflow",
     images={"image": "test_image.jpg"},
     use_cache=True
 )
